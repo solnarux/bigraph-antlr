@@ -18,7 +18,8 @@ expr         : expr ('+' | '-') expr
              | expr ('*' | '/') expr 
              | '(' expr ')' 
              | NUMBER 
-             | ID;
+             | ID
+             | ID '(' argList? ')';
 
 type         : 'int' | 'float' | 'void';
 
@@ -26,3 +27,4 @@ type         : 'int' | 'float' | 'void';
 ID           : [a-zA-Z_][a-zA-Z0-9_]*;
 NUMBER       : [0-9]+ ('.' [0-9]+)?;
 WS           : [ \t\r\n]+ -> skip;
+argList      : expr (',' expr)*;

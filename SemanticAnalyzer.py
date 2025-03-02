@@ -2,6 +2,7 @@ from SimpleLangParser import SimpleLangParser
 from SimpleLangVisitor import SimpleLangVisitor
 from bigraph_symbol_table import BigraphSymbolTable
 from SemanticTreeBuilder import SemanticTreeBuilder
+import re
 
 class SemanticAnalyzer(SimpleLangVisitor):
     def __init__(self):
@@ -20,12 +21,19 @@ class SemanticAnalyzer(SimpleLangVisitor):
         location = (ctx.start.line, ctx.start.column)
         # Pass additional metadata (AST node and location) to your symbol table
         self.symbol_table.add_symbol(var_name, self.current_scope, "var", var_type, var_value ,ast_node=ctx, location=location)
+        
+        expr_symbols = ctx.expr().getText()
+        expr_symbols = re.findall(r'\b[a-zA-Z_]\w*\b', expr_symbols)
+        self.symbol_table.add_dependency([var_name] + expr_symbols, self.current_scope)
+
         return self.visitChildren(ctx)
 
     def visitAssignStmt(self, ctx: SimpleLangParser.AssignStmtContext):
         """Procesa asignaciones, registrando dependencias."""
         var_name = ctx.ID().getText()
-        expr_symbols = [t.getText() for t in ctx.expr().getTokens(SimpleLangParser.ID)]
+        expr_symbols = ctx.expr().getText()
+        expr_symbols = re.findall(r'\b[a-zA-Z_]\w*\b', expr_symbols)
+        #[t.getText() for t in ctx.expr().getTokens(SimpleLangParser.ID)]
 
         # Registrar variable si no está en la tabla
         if var_name not in self.symbol_table.symbol_table:

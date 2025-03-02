@@ -67,6 +67,9 @@ class BigraphSymbolTable:
         candidate = f"global.{symbol}"
         if candidate in self.symbol_table:
             return candidate
+        candidate = f"global.{current_scope}.{symbol}"
+        if candidate in self.symbol_table:
+            return candidate
         return None
 
     def add_dependency(self, symbols, current_scope="global"):
@@ -103,8 +106,8 @@ class BigraphSymbolTable:
         """Muestra la estructura del hipergrafo."""
         print("\n🔗 HYPERGRAPH STRUCTURE\n")
         print("🟢 Nodos en el hipergrafo:")
-        for node in self.hypergraph.incidence_dict:
-            print(f"   - {node}")
+        for arista in self.hypergraph.incidence_dict:
+            print(f"   - {arista}")
 
         print("\n🔵 Hiperaristas (Relaciones Semánticas):")
         for edge, nodes in self.hypergraph.incidence_dict.items():

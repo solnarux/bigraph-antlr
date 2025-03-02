@@ -69,5 +69,10 @@ class SimpleLangVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by SimpleLangParser#argList.
+    def visitArgList(self, ctx:SimpleLangParser.ArgListContext):
+        return self.visitChildren(ctx)
+
+
 
 del SimpleLangParser

@@ -1,7 +1,8 @@
 let x: int = 10;
 let y: float = 5.5;
 let h: int = x + 5;
-x = 20;
+x = y + h + 2;
+
 fn sumar(a: int, b: int) -> int {
     let dep: int = 10;
     let z: int = x + 1;
@@ -9,3 +10,12 @@ fn sumar(a: int, b: int) -> int {
     let resultado: int = a + b + dep;
     return resultado;
 }
+
+fn p(a: int, c:int) -> int{
+    return a + c;
+}
+
+let juan: int = sumar(x,y);
+let c: int = p(h,x);
+
+let sumados: int = juan + c;

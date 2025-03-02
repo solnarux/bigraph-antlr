@@ -116,5 +116,14 @@ class SimpleLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by SimpleLangParser#argList.
+    def enterArgList(self, ctx:SimpleLangParser.ArgListContext):
+        pass
+
+    # Exit a parse tree produced by SimpleLangParser#argList.
+    def exitArgList(self, ctx:SimpleLangParser.ArgListContext):
+        pass
+
+
 
 del SimpleLangParser

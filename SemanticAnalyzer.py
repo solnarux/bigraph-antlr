@@ -91,6 +91,7 @@ class SemanticAnalyzer(SimpleLangVisitor):
         self.symbol_table.show_symbol_table()
 
         self.symbol_table.show_hypergraph()
+        self.symbol_table.draw_hypergraph()
 
         self.symbol_table.show_semantic_tree()
         print("Semantic analysis completed.")

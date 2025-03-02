@@ -96,18 +96,67 @@ class BigraphSymbolTable:
             print(f"  {scope} -> {list(self.forest.successors(scope))}")
 
     def draw_forest(self):
-        """Visualiza el bosque de ámbitos con matplotlib."""
-        plt.figure(figsize=(6, 6))
-        pos = nx.planar_layout(self.forest)
-        nx.draw(self.forest, pos, with_labels=True, arrows=True, node_size=2000, node_color="skyblue", font_size=10)
+        """Visualizes the forest of scopes using a top-down hierarchical layout with space-around spacing."""
+        plt.figure(figsize=(10, 8))
+
+        # Compute hierarchical positions
+        pos = self.hierarchical_pos(self.forest)
+
+        # Draw the graph with the computed hierarchical layout
+        nx.draw(self.forest, pos, with_labels=True, arrows=True, 
+                node_size=2000, node_color="skyblue", font_size=10, edge_color="gray")
+
+        plt.title("Bigraph Symbol Table - Scope Hierarchy (Space-Around)")
         plt.show()
+
+    def hierarchical_pos(self, G, root=None, width=1., vert_gap=0.2, xcenter=0.5):
+        """Computes hierarchical positions for a directed graph."""
+        pos = self._hierarchy_pos(G, root, width, vert_gap, xcenter)
+        return pos
+    
+    def _hierarchy_pos(self, G, root=None, width=1., vert_gap=0.2, xcenter=0.5, pos=None, parent=None, level=0, visited=None):
+        """Recursively assigns positions for nodes in a hierarchical layout with space-around spacing."""
+        if pos is None:
+            pos = {}
+        if visited is None:
+            visited = set()
+
+        if root is None:
+            root = [n for n, d in G.in_degree() if d == 0][0]  # Find root if not given
+
+        if root in visited:  # Prevent re-positioning already placed nodes
+            return pos
+        visited.add(root)
+
+        pos[root] = (xcenter, 1 - level * vert_gap)
+
+        children = list(G.successors(root))
+        num_children = len(children)
+
+        if num_children != 0:
+            # Calculate the spacing between children
+            if num_children == 1:
+                dx = 0  # No spacing needed for a single child
+            else:
+                dx = width / (num_children - 1)  # Space-around spacing
+
+            # Start from the leftmost position
+            next_x = xcenter - width / 2
+
+            for child in children:
+                # If a node has multiple parents, don't override its position
+                if child not in pos:
+                    pos[child] = (next_x, 1 - (level + 1) * vert_gap)
+                # Recursively compute positions for children
+                self._hierarchy_pos(G, child, width=width, vert_gap=vert_gap, 
+                                    xcenter=next_x, pos=pos, parent=root, level=level + 1, visited=visited)
+                next_x += dx  # Move right for next child
+
+        return pos
 
     def show_hypergraph(self):
         """Muestra la estructura del hipergrafo."""
         print("\n🔗 HYPERGRAPH STRUCTURE\n")
-        print("🟢 Nodos en el hipergrafo:")
-        for arista in self.hypergraph.incidence_dict:
-            print(f"   - {arista}")
 
         print("\n🔵 Hiperaristas (Relaciones Semánticas):")
         for edge, nodes in self.hypergraph.incidence_dict.items():
@@ -129,7 +178,7 @@ class BigraphSymbolTable:
                     symbol_type = symbol_info["symbol_type"]
                     data_type = symbol_info["data_type"] or "unknown"
                     symbol_value = symbol_info["value"] or "unknown"
-                    
+
                     print(" " * (indent_level + 2) + f"📌 {symbol} ({symbol_type}: {data_type}, value: {symbol_value})")
 
 
@@ -149,7 +198,38 @@ class BigraphSymbolTable:
                 print(f"   - {key}: {value}")
 
     def draw_hypergraph(self):
-        """Visualiza el hipergrafo con matplotlib."""
-        plt.figure(figsize=(6, 6))
-        hnx.draw(self.hypergraph)
+        """Visualizes the hypergraph using a directed graph (DiGraph) representation, including all nodes."""
+        # Create a copy of the forest (DiGraph) to represent the hypergraph
+        hypergraph_digraph = nx.DiGraph()
+
+        # Add all nodes from the forest (even those without connections)
+        for node in self.forest.nodes:
+            hypergraph_digraph.add_node(node)
+
+        # Add nodes and hyperedges from the hypergraph
+        for edge, nodes in self.hypergraph.incidence_dict.items():
+            # Add the hyperedge as a central node
+            hypergraph_digraph.add_node(edge, type="hyperedge")
+            # Connect the hyperedge to its constituent nodes
+            for node in nodes:
+                hypergraph_digraph.add_edge(edge, node)
+
+        # Compute positions for the nodes
+        pos = nx.spring_layout(hypergraph_digraph)
+
+        # Draw the graph
+        plt.figure(figsize=(12, 8))
+
+        # Draw nodes
+        node_colors = []
+        for node in hypergraph_digraph.nodes:
+            if hypergraph_digraph.nodes[node].get("type") == "hyperedge":
+                node_colors.append("red")  # Color hyperedges differently
+            else:
+                node_colors.append("skyblue")
+
+        nx.draw(hypergraph_digraph, pos, with_labels=True, node_color=node_colors, 
+                node_size=2000, font_size=10, edge_color="gray", arrows=False)
+
+        plt.title("Hypergraph Representation using DiGraph (All Nodes Included)")
         plt.show()

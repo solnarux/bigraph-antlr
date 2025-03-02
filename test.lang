@@ -10,12 +10,3 @@ fn sumar(a: int, b: int) -> int {
     let resultado: int = a + b + dep;
     return resultado;
 }
-
-fn p(a: int, c:int) -> int{
-    return a + c;
-}
-
-let juan: int = sumar(x,y);
-let c: int = p(h,x);
-
-let sumados: int = juan + c;

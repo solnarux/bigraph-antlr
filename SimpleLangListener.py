@@ -44,6 +44,15 @@ class SimpleLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by SimpleLangParser#returnStmt.
+    def enterReturnStmt(self, ctx:SimpleLangParser.ReturnStmtContext):
+        pass
+
+    # Exit a parse tree produced by SimpleLangParser#returnStmt.
+    def exitReturnStmt(self, ctx:SimpleLangParser.ReturnStmtContext):
+        pass
+
+
     # Enter a parse tree produced by SimpleLangParser#exprStmt.
     def enterExprStmt(self, ctx:SimpleLangParser.ExprStmtContext):
         pass
@@ -53,12 +62,57 @@ class SimpleLangListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by SimpleLangParser#funcDecl.
+    def enterFuncDecl(self, ctx:SimpleLangParser.FuncDeclContext):
+        pass
+
+    # Exit a parse tree produced by SimpleLangParser#funcDecl.
+    def exitFuncDecl(self, ctx:SimpleLangParser.FuncDeclContext):
+        pass
+
+
+    # Enter a parse tree produced by SimpleLangParser#paramList.
+    def enterParamList(self, ctx:SimpleLangParser.ParamListContext):
+        pass
+
+    # Exit a parse tree produced by SimpleLangParser#paramList.
+    def exitParamList(self, ctx:SimpleLangParser.ParamListContext):
+        pass
+
+
+    # Enter a parse tree produced by SimpleLangParser#param.
+    def enterParam(self, ctx:SimpleLangParser.ParamContext):
+        pass
+
+    # Exit a parse tree produced by SimpleLangParser#param.
+    def exitParam(self, ctx:SimpleLangParser.ParamContext):
+        pass
+
+
+    # Enter a parse tree produced by SimpleLangParser#block.
+    def enterBlock(self, ctx:SimpleLangParser.BlockContext):
+        pass
+
+    # Exit a parse tree produced by SimpleLangParser#block.
+    def exitBlock(self, ctx:SimpleLangParser.BlockContext):
+        pass
+
+
     # Enter a parse tree produced by SimpleLangParser#expr.
     def enterExpr(self, ctx:SimpleLangParser.ExprContext):
         pass
 
     # Exit a parse tree produced by SimpleLangParser#expr.
     def exitExpr(self, ctx:SimpleLangParser.ExprContext):
+        pass
+
+
+    # Enter a parse tree produced by SimpleLangParser#type.
+    def enterType(self, ctx:SimpleLangParser.TypeContext):
+        pass
+
+    # Exit a parse tree produced by SimpleLangParser#type.
+    def exitType(self, ctx:SimpleLangParser.TypeContext):
         pass
 
 

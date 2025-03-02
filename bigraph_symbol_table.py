@@ -125,8 +125,10 @@ class BigraphSymbolTable:
                     symbol_info = self.symbol_table[symbol]
                     symbol_type = symbol_info["symbol_type"]
                     data_type = symbol_info["data_type"] or "unknown"
+                    symbol_value = symbol_info["value"] or "unknown"
+                    
+                    print(" " * (indent_level + 2) + f"📌 {symbol} ({symbol_type}: {data_type}, value: {symbol_value})")
 
-                    print(" " * (indent_level + 2) + f"📌 {symbol} ({symbol_type}: {data_type})")
 
                     # Find dependencies related to this symbol
                     for edge, nodes in self.hypergraph.incidence_dict.items():

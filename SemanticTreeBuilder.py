@@ -22,8 +22,9 @@ class SemanticTreeBuilder:
             name=full_name,
             node_type=info.get("symbol_type", "scope"),
             data_type=info.get("data_type"),
+            value=info.get("value"),
             ast_node=info.get("ast_node"),
-            location=info.get("location")
+            location=info.get("location"),
         )
         self.node_map[full_name] = node
         return node

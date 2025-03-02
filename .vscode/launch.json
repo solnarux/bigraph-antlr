@@ -6,7 +6,7 @@
             "type": "debugpy",
             "request": "launch",
             "program": "${workspaceFolder}/analyze.py",
-            "python": "c:/Users/david/AppData/Local/Programs/Python/Python312/python.exe", //si va a debugear ponga su carpeta
+            "python": "C:/Users/solna/AppData/Local/Programs/Python/Python310/python.exe", //si va a debugear ponga su carpeta
             "console": "integratedTerminal"
         }
     ]

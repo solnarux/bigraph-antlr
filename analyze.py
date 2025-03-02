@@ -13,5 +13,7 @@ def analyze_code(file_path):
     analyzer = SemanticAnalyzer()
     analyzer.analyze(tree)
 
+    
+
 if __name__ == "__main__":
     analyze_code("test.lang")

@@ -1,6 +1,7 @@
 from SimpleLangParser import SimpleLangParser
 from SimpleLangVisitor import SimpleLangVisitor
 from bigraph_symbol_table import BigraphSymbolTable
+from SemanticTreeBuilder import SemanticTreeBuilder
 
 class SemanticAnalyzer(SimpleLangVisitor):
     def __init__(self):
@@ -14,9 +15,10 @@ class SemanticAnalyzer(SimpleLangVisitor):
     def visitVarDecl(self, ctx: SimpleLangParser.VarDeclContext):
         """Procesa declaraciones de variables con su tipo."""
         var_name = ctx.ID().getText()
-        var_type = ctx.type_().getText()  # Obtener tipo de la variable
-
-        self.symbol_table.add_symbol(var_name, self.current_scope, "var", var_type)
+        var_type = ctx.type_().getText()
+        location = (ctx.start.line, ctx.start.column)
+        # Pass additional metadata (AST node and location) to your symbol table
+        self.symbol_table.add_symbol(var_name, self.current_scope, "var", var_type, ast_node=ctx, location=location)
         return self.visitChildren(ctx)
 
     def visitAssignStmt(self, ctx: SimpleLangParser.AssignStmtContext):
@@ -76,3 +78,19 @@ class SemanticAnalyzer(SimpleLangVisitor):
         self.symbol_table.show_forest()
         self.symbol_table.show_hypergraph()
         self.symbol_table.show_semantic_tree()
+        print("Semantic analysis completed.")
+        builder = SemanticTreeBuilder(self.symbol_table.forest, self.symbol_table.symbol_table, self.symbol_table.hypergraph)
+        semantic_tree_root = builder.build_tree()
+        print_semantic_tree(semantic_tree_root)
+
+
+
+
+def print_semantic_tree(node, indent=0):
+    indent_space = " " * indent
+    loc_info = f" [line: {node.location[0]}, col: {node.location[1]}]" if node.location else ""
+    print(f"{indent_space}{node.name} ({node.node_type}, {node.data_type}){loc_info}")
+    if node.dependencies:
+        print(f"{indent_space}  -> Dependencies: {', '.join(node.dependencies)}")
+    for child in node.children:
+        print_semantic_tree(child, indent + 4)

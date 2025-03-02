@@ -91,6 +91,13 @@ class BigraphSymbolTable:
         for scope in nx.topological_sort(self.forest):
             print(f"  {scope} -> {list(self.forest.successors(scope))}")
 
+    def draw_forest(self):
+        """Visualiza el bosque de ámbitos con matplotlib."""
+        plt.figure(figsize=(6, 6))
+        pos = nx.planar_layout(self.forest)
+        nx.draw(self.forest, pos, with_labels=True, arrows=True, node_size=2000, node_color="skyblue", font_size=10)
+        plt.show()
+
     def show_hypergraph(self):
         """Muestra la estructura del hipergrafo."""
         print("\n🔗 HYPERGRAPH STRUCTURE\n")
@@ -127,6 +134,13 @@ class BigraphSymbolTable:
                             if dep_nodes:
                                 print(" " * (indent_level + 4) + f"🔗 Depends on: {', '.join(dep_nodes)}")
 
+    def show_symbol_table(self):
+        """Muestra la tabla de símbolos de manera legible."""
+        print("\n📋 SYMBOL TABLE\n")
+        for full_name, info in self.symbol_table.items():
+            print(f"🔹 {full_name}")
+            for key, value in info.items():
+                print(f"   - {key}: {value}")
 
     def draw_hypergraph(self):
         """Visualiza el hipergrafo con matplotlib."""

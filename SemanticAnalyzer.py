@@ -75,8 +75,14 @@ class SemanticAnalyzer(SimpleLangVisitor):
     def analyze(self, tree):
         """Ejecuta el análisis semántico recorriendo el árbol."""
         self.visit(tree)
+        
         self.symbol_table.show_forest()
+        self.symbol_table.draw_forest()
+
+        self.symbol_table.show_symbol_table()
+
         self.symbol_table.show_hypergraph()
+
         self.symbol_table.show_semantic_tree()
         print("Semantic analysis completed.")
         builder = SemanticTreeBuilder(self.symbol_table.forest, self.symbol_table.symbol_table, self.symbol_table.hypergraph)

@@ -29,7 +29,8 @@ class SemanticAnalyzer(SimpleLangVisitor):
             self.symbol_table.add_symbol(var_name, self.current_scope)
 
         # Registrar dependencia en el hipergrafo
-        self.symbol_table.add_dependency([var_name] + expr_symbols)
+        self.symbol_table.add_dependency([var_name] + expr_symbols, self.current_scope)
+
         return self.visitChildren(ctx)
 
     def visitFuncDecl(self, ctx: SimpleLangParser.FuncDeclContext):
@@ -63,9 +64,10 @@ class SemanticAnalyzer(SimpleLangVisitor):
     def visitReturnStmt(self, ctx: SimpleLangParser.ReturnStmtContext):
         """Procesa declaraciones de retorno en funciones."""
         if ctx.expr():
+            # Extract symbols from the return expression
             return_symbols = [t.getText() for t in ctx.expr().getTokens(SimpleLangParser.ID)]
-            if return_symbols:
-                self.symbol_table.add_dependency(return_symbols)
+            # Include the current function (scope) as a dependency source
+            self.symbol_table.add_dependency([self.current_scope] + return_symbols, self.current_scope)
         return self.visitChildren(ctx)
 
     def analyze(self, tree):

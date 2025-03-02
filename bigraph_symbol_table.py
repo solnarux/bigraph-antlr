@@ -59,16 +59,31 @@ class BigraphSymbolTable:
         
         return full_func_name
 
-    def add_dependency(self, symbols):
-        """Agrega una dependencia semántica entre múltiples símbolos en el hipergrafo."""
-        nodes = [sym for sym in symbols if sym in self.symbol_table]
+    def resolve_symbol(self, symbol, current_scope):
+        candidate = f"{current_scope}.{symbol}"
+        if candidate in self.symbol_table:
+            return candidate
+        candidate = f"global.{symbol}"
+        if candidate in self.symbol_table:
+            return candidate
+        return None
 
-        if len(nodes) > 1:
+    def add_dependency(self, symbols, current_scope="global"):
+        # Attempt to resolve each symbol into its fully qualified version
+        resolved_nodes = []
+        for sym in symbols:
+            full_sym = sym if sym in self.symbol_table else self.resolve_symbol(sym, current_scope)
+            if full_sym:
+                resolved_nodes.append(full_sym)
+            else:
+                print(f"⚠️ Symbol '{sym}' could not be resolved (in scope {current_scope}).")
+        if len(resolved_nodes) >1:
             edge_id = f"dep_{'_'.join(symbols)}"
-            self.hypergraph.add_edge(edge_id, nodes)
-        else:
-            missing = [sym for sym in symbols if sym not in self.symbol_table]
-            print(f"⚠️ No se pudo agregar dependencia: {symbols} (faltan: {missing})")
+            # self.hypergraph.add_edge(edge_id, resolved_nodes)
+            self.hypergraph.add_edge(edge_id)
+            # Add incidences (connections between edge and nodes)
+            for node in resolved_nodes:
+                self.hypergraph.add_incidence(edge_id, node)
 
     def show_forest(self):
         """Muestra la estructura jerárquica del bosque."""
@@ -85,7 +100,7 @@ class BigraphSymbolTable:
 
         print("\n🔵 Hiperaristas (Relaciones Semánticas):")
         for edge, nodes in self.hypergraph.incidence_dict.items():
-            print(f"   - {edge} conecta: {', '.join(nodes)}")
+            print(f"   - {edge} conecta: {', '.join(nodes)}")        
 
     def draw_hypergraph(self):
         """Visualiza el hipergrafo con matplotlib."""

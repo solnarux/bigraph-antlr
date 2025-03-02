@@ -59,6 +59,17 @@ class BigraphSymbolTable:
         
         return full_func_name
 
+    def add_dependency(self, symbols):
+        """Agrega una dependencia semántica entre múltiples símbolos en el hipergrafo."""
+        nodes = [sym for sym in symbols if sym in self.symbol_table]
+
+        if len(nodes) > 1:
+            edge_id = f"dep_{'_'.join(symbols)}"
+            self.hypergraph.add_edge(edge_id, nodes)
+        else:
+            missing = [sym for sym in symbols if sym not in self.symbol_table]
+            print(f"⚠️ No se pudo agregar dependencia: {symbols} (faltan: {missing})")
+
     def show_forest(self):
         """Muestra la estructura jerárquica del bosque."""
         print("\n🌳 Forest (Scopes & Symbols):")
@@ -81,4 +92,3 @@ class BigraphSymbolTable:
         plt.figure(figsize=(6, 6))
         hnx.draw(self.hypergraph)
         plt.show()
-

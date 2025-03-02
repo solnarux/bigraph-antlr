@@ -12,22 +12,60 @@ class SemanticAnalyzer(SimpleLangVisitor):
         self.symbol_table.add_scope(self.current_scope)
 
     def visitVarDecl(self, ctx: SimpleLangParser.VarDeclContext):
-        """Procesa declaraciones de variables."""
+        """Procesa declaraciones de variables con su tipo."""
         var_name = ctx.ID().getText()
-        self.symbol_table.add_symbol(var_name, self.current_scope)
+        var_type = ctx.type_().getText()  # Obtener tipo de la variable
+
+        self.symbol_table.add_symbol(var_name, self.current_scope, "var", var_type)
         return self.visitChildren(ctx)
 
     def visitAssignStmt(self, ctx: SimpleLangParser.AssignStmtContext):
         """Procesa asignaciones, registrando dependencias."""
         var_name = ctx.ID().getText()
         expr_symbols = [t.getText() for t in ctx.expr().getTokens(SimpleLangParser.ID)]
-        
+
         # Registrar variable si no está en la tabla
         if var_name not in self.symbol_table.symbol_table:
             self.symbol_table.add_symbol(var_name, self.current_scope)
 
         # Registrar dependencia en el hipergrafo
         self.symbol_table.add_dependency([var_name] + expr_symbols)
+        return self.visitChildren(ctx)
+
+    def visitFuncDecl(self, ctx: SimpleLangParser.FuncDeclContext):
+        """Procesa declaraciones de funciones."""
+        func_name = ctx.ID().getText()
+        return_type = ctx.type_().getText()
+        params = {}
+
+        # Procesar parámetros
+        if ctx.paramList():
+            for param in ctx.paramList().param():
+                param_name = param.ID().getText()
+                param_type = param.type_().getText()
+                params[param_name] = param_type
+
+        # Registrar función en la tabla de símbolos
+        self.symbol_table.add_function(func_name, self.current_scope, return_type, params)
+
+        # Cambiar de ámbito al cuerpo de la función
+        previous_scope = self.current_scope
+        self.current_scope = func_name
+        self.symbol_table.add_scope(self.current_scope, previous_scope)
+
+        # Procesar el bloque de la función
+        self.visit(ctx.block())
+
+        # Regresar al ámbito anterior
+        self.current_scope = previous_scope
+        return None
+
+    def visitReturnStmt(self, ctx: SimpleLangParser.ReturnStmtContext):
+        """Procesa declaraciones de retorno en funciones."""
+        if ctx.expr():
+            return_symbols = [t.getText() for t in ctx.expr().getTokens(SimpleLangParser.ID)]
+            if return_symbols:
+                self.symbol_table.add_dependency(return_symbols)
         return self.visitChildren(ctx)
 
     def analyze(self, tree):

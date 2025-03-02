@@ -1,9 +1,11 @@
 let x: int = 10;
 let y: float = 5.5;
 let h: int = x + 5;
+x = 3;
 
 fn sumar(a: int, b: int) -> int {
     let dep: int = 10;
+    let z: int = x + 1;
     let resultado: int = a + b + dep;
     return resultado;
 }

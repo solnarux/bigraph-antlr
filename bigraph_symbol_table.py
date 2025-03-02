@@ -20,7 +20,7 @@ class BigraphSymbolTable:
         if parent:
             self.forest.add_edge(parent, scope_name)
 
-    def add_symbol(self, name, scope="global", symbol_type="var", data_type=None, ast_node=None, location=None):
+    def add_symbol(self, name, scope="global", symbol_type="var",  data_type=None, value=None, ast_node=None, location=None):
         """Registra un nuevo símbolo con su tipo y lo agrega al bosque e hipergrafo."""
         full_name = f"{scope}.{name}"
         if full_name not in self.symbol_table:
@@ -30,7 +30,8 @@ class BigraphSymbolTable:
                 "symbol_type": symbol_type,
                 "data_type": data_type,
                 "ast_node": ast_node,
-                "location": location
+                "location": location,
+                "value": value
             }
             self.forest.add_node(full_name)
             self.forest.add_edge(scope, full_name)

@@ -16,9 +16,10 @@ class SemanticAnalyzer(SimpleLangVisitor):
         """Procesa declaraciones de variables con su tipo."""
         var_name = ctx.ID().getText()
         var_type = ctx.type_().getText()
+        var_value = ctx.expr().getText() if ctx.expr() else None
         location = (ctx.start.line, ctx.start.column)
         # Pass additional metadata (AST node and location) to your symbol table
-        self.symbol_table.add_symbol(var_name, self.current_scope, "var", var_type, ast_node=ctx, location=location)
+        self.symbol_table.add_symbol(var_name, self.current_scope, "var", var_type, var_value ,ast_node=ctx, location=location)
         return self.visitChildren(ctx)
 
     def visitAssignStmt(self, ctx: SimpleLangParser.AssignStmtContext):
@@ -75,7 +76,7 @@ class SemanticAnalyzer(SimpleLangVisitor):
     def analyze(self, tree):
         """Ejecuta el análisis semántico recorriendo el árbol."""
         self.visit(tree)
-        
+
         self.symbol_table.show_forest()
         self.symbol_table.draw_forest()
 

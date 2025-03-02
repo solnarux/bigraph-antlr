@@ -102,6 +102,32 @@ class BigraphSymbolTable:
         for edge, nodes in self.hypergraph.incidence_dict.items():
             print(f"   - {edge} conecta: {', '.join(nodes)}")        
 
+    def show_semantic_tree(self):
+        """Prints an enhanced version of the forest with dependencies."""
+        print("\n🌳 SEMANTIC TREE\n")
+
+        # First, print the scope-based structure (forest)
+        for scope in nx.topological_sort(self.forest):
+            indent_level = scope.count(".") * 2  # Adjust indentation based on scope depth
+            print(" " * indent_level + f"📂 {scope}")
+
+            # Find symbols in this scope
+            for symbol in self.forest.successors(scope):
+                if symbol in self.symbol_table:
+                    symbol_info = self.symbol_table[symbol]
+                    symbol_type = symbol_info["symbol_type"]
+                    data_type = symbol_info["data_type"] or "unknown"
+
+                    print(" " * (indent_level + 2) + f"📌 {symbol} ({symbol_type}: {data_type})")
+
+                    # Find dependencies related to this symbol
+                    for edge, nodes in self.hypergraph.incidence_dict.items():
+                        if symbol in nodes:
+                            dep_nodes = [n for n in nodes if n != symbol]
+                            if dep_nodes:
+                                print(" " * (indent_level + 4) + f"🔗 Depends on: {', '.join(dep_nodes)}")
+
+
     def draw_hypergraph(self):
         """Visualiza el hipergrafo con matplotlib."""
         plt.figure(figsize=(6, 6))

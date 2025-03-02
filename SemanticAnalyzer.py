@@ -75,3 +75,4 @@ class SemanticAnalyzer(SimpleLangVisitor):
         self.visit(tree)
         self.symbol_table.show_forest()
         self.symbol_table.show_hypergraph()
+        self.symbol_table.show_semantic_tree()
